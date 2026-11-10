@@ -1,0 +1,23 @@
+# Dependencies and build output (for later phases: Cloud Functions, Capacitor)
+node_modules/
+dist/
+build/
+
+# Secrets — never commit these
+.env
+.env.*
+*.pem
+*.key
+serviceAccount*.json
+*service-account*.json
+*-firebase-adminsdk-*.json
+.runtimeconfig.json
+
+# Firebase local files
+.firebase/
+firebase-debug.log
+*.log
+
+# OS / editor noise
+.DS_Store
+Thumbs.db

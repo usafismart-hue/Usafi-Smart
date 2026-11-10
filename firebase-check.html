@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Ukaguzi wa Firebase | USAFI SMART</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#022B5B">
+  <link rel="icon" type="image/svg+xml" href="assets/images/logo.svg">
+  <link rel="stylesheet" href="shared/styles.css">
+  <!-- Styles for this diagnostic page only; uses the shared design tokens. -->
+  <style>
+    .checks { display: grid; gap: 10px; margin: 18px 0; }
+    .checks li { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start;
+                 padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius); }
+    .checks .badge { font-size: 0.75rem; font-weight: 700; padding: 3px 10px; border-radius: 999px;
+                     white-space: nowrap; background: var(--grey); color: var(--navy); }
+    .checks .ok   .badge { background: #dcfce7; color: var(--green-dark); }
+    .checks .warn .badge { background: #fef3c7; color: #92400e; }
+    .checks .fail .badge { background: #fee2e2; color: var(--danger); }
+    .checks strong { display: block; color: var(--navy); }
+    .checks span.detail { color: var(--text-muted); font-size: 0.93rem; overflow-wrap: anywhere; }
+    .summary { font-weight: 600; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="index.html" aria-label="USAFI SMART - Nyumbani">
+        <img src="assets/images/logo.svg" alt="" width="36" height="36">
+        <span class="brand__name">USAFI <span>SMART</span></span>
+      </a>
+      <a class="btn btn--outline btn--sm" href="index.html">Rudi Nyumbani</a>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container">
+      <div class="card">
+        <span class="eyebrow">Zana ya Wasanidi</span>
+        <h1>Ukaguzi wa muunganisho wa Firebase</h1>
+        <p>Ukurasa huu unaonyesha kama kila huduma ya Firebase imeanza vizuri. Ufungue kupitia
+           <strong>Live Server (http://localhost)</strong>, si kwa kubofya faili moja kwa moja.
+           Si sehemu ya tovuti ya wateja, na unaweza kuufuta kabla ya uzinduzi.</p>
+
+        <ul class="checks" id="checks" aria-live="polite">
+          <li><span class="badge">Inakagua</span><div><strong>Inaanza…</strong></div></li>
+        </ul>
+
+        <p class="summary" id="summary"></p>
+        <button class="btn btn--primary" type="button" id="rerun">Kagua tena</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="shared/ui.js"></script>
+  <script type="module" src="js/firebase-check.js"></script>
+</body>
+</html>
