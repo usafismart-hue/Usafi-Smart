@@ -11,16 +11,17 @@
   <!-- Styles for this diagnostic page only; uses the shared design tokens. -->
   <style>
     .checks { display: grid; gap: 10px; margin: 18px 0; }
-    .checks li { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start;
+    .checks li { display: grid; grid-template-columns: 7.5rem 1fr; gap: 12px; align-items: start;
                  padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius); }
     .checks .badge { font-size: 0.75rem; font-weight: 700; padding: 3px 10px; border-radius: 999px;
-                     white-space: nowrap; background: var(--grey); color: var(--navy); }
+                     text-align: center; background: var(--grey); color: var(--navy); }
     .checks .ok   .badge { background: #dcfce7; color: var(--green-dark); }
     .checks .warn .badge { background: #fef3c7; color: #92400e; }
     .checks .fail .badge { background: #fee2e2; color: var(--danger); }
     .checks strong { display: block; color: var(--navy); }
     .checks span.detail { color: var(--text-muted); font-size: 0.93rem; overflow-wrap: anywhere; }
     .summary { font-weight: 600; }
+    .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
   </style>
 </head>
 <body>
@@ -39,16 +40,23 @@
       <div class="card">
         <span class="eyebrow">Zana ya Wasanidi</span>
         <h1>Ukaguzi wa muunganisho wa Firebase</h1>
-        <p>Ukurasa huu unaonyesha kama kila huduma ya Firebase imeanza vizuri. Ufungue kupitia
-           <strong>Live Server (http://localhost)</strong>, si kwa kubofya faili moja kwa moja.
-           Si sehemu ya tovuti ya wateja, na unaweza kuufuta kabla ya uzinduzi.</p>
+        <p>Ukurasa huu unatofautisha <strong>kuanzishwa</strong> kwa SDK ndani ya browser (Initialised)
+           na <strong>mawasiliano halisi</strong> na Firebase (Connected). Ufungue kupitia
+           <strong>Live Server (http://localhost)</strong>, si kwa kubofya faili moja kwa moja.</p>
+        <p>Hauundi akaunti yoyote wala hauandiki data. Unajaribu kuingia mara moja kwa nywila bandia
+           (inakataliwa daima) na kusoma tu bila kuingia, ili kuona kama rules zimefungwa.
+           Si sehemu ya tovuti ya wateja; unaweza kuufuta kabla ya uzinduzi.</p>
 
         <ul class="checks" id="checks" aria-live="polite">
           <li><span class="badge">Inakagua</span><div><strong>Inaanza…</strong></div></li>
         </ul>
 
         <p class="summary" id="summary"></p>
-        <button class="btn btn--primary" type="button" id="rerun">Kagua tena</button>
+        <div class="actions">
+          <button class="btn btn--primary" type="button" id="rerun">Kagua tena</button>
+          <button class="btn btn--outline" type="button" id="copy">Nakili ripoti</button>
+          <span id="copy-status" role="status"></span>
+        </div>
       </div>
     </div>
   </main>

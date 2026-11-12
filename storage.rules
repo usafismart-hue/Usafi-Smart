@@ -1,0 +1,60 @@
+rules_version = '2';
+
+// USAFI SMART - Cloud Storage Security Rules
+// DRAFT FOR OWNER REVIEW. Not deployed. Everything not listed below is denied.
+//
+// Admin = a user whose ID token carries the custom claim `admin: true`.
+// That claim is set only by trusted server-side tools (never from the browser).
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+    function isAdmin() {
+      return signedIn() && request.auth.token.admin == true;
+    }
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+    // 1 byte .. 5 MB
+    function sizeOk() {
+      return request.resource.size > 0 && request.resource.size <= 5 * 1024 * 1024;
+    }
+    function isDocument() {
+      return sizeOk() && request.resource.contentType.matches('application/pdf|image/jpeg|image/png');
+    }
+    function isImage() {
+      return sizeOk() && request.resource.contentType.matches('image/jpeg|image/png');
+    }
+
+    // PRIVATE provider documents: NIDA, BRELA, business licence, integrity
+    // declaration, application letter. Readable only by the owner and admins.
+    // Files can be CREATED but never overwritten: a resubmission is a new file
+    // with a new name, so approved evidence cannot be silently replaced.
+    // Only admins can delete.
+    match /provider_documents/{uid}/{docType}/{fileName} {
+      allow read: if isOwner(uid) || isAdmin();
+      allow create: if isOwner(uid)
+                    && isDocument()
+                    && docType.matches('brela|business_licence|nida|integrity_declaration|application_letter|identification')
+                    && fileName.size() <= 120;
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+
+    // Profile photos: any signed-in user can view (a customer sees the assigned
+    // cleaner); only the owner can upload or replace.
+    match /profile_photos/{uid}/{fileName} {
+      allow read: if signedIn();
+      allow create, update: if isOwner(uid) && isImage() && fileName.size() <= 120;
+      allow delete: if isOwner(uid) || isAdmin();
+    }
+
+    // Everything else: no access.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -31,11 +31,7 @@ export const firebaseConfig = {
   projectId: "usafi-smart",
   storageBucket: "usafi-smart.firebasestorage.app",
   messagingSenderId: "803722934636",
-  // TODO: confirm. A complete web appId looks like "1:803722934636:web:<hash>".
-  // This value ends at ":web", so Analytics (and later Cloud Messaging) may not
-  // work until the full value is copied from Firebase Console ->
-  // Project settings -> Your apps -> SDK setup and configuration.
-  appId: "1:803722934636:web",
+  appId: "1:803722934636:web:d5d7461b90c97990a65b49",
   measurementId: "G-P8LYNZKMGH"
 };
 

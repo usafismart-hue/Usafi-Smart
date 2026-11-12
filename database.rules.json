@@ -1,0 +1,444 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "users": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || auth.token.admin === true)",
+        ".write": "auth != null && (auth.uid === $uid || auth.token.admin === true)",
+        ".validate": "newData.hasChildren(['accountType', 'createdAt'])",
+        "accountType": {
+          ".validate": "newData.isString() && newData.val().matches(/^(customer|cleaner|company|admin)$/) && (newData.val() !== 'admin' || auth.token.admin === true) && (!data.exists() || data.val() === newData.val())"
+        },
+        "fullName": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 100"
+        },
+        "phone": {
+          ".validate": "newData.isString() && newData.val().matches(/^\\+?[0-9]{9,15}$/)"
+        },
+        "email": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 254"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber() && (data.exists() ? newData.val() === data.val() : newData.val() === now)"
+        },
+        "updatedAt": {
+          ".validate": "newData.isNumber() && newData.val() === now"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "customers": {
+      ".read": "auth.token.admin === true",
+      ".write": "auth.token.admin === true",
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || auth.token.admin === true)",
+        ".write": "auth != null && (auth.uid === $uid || auth.token.admin === true)",
+        ".validate": "newData.hasChildren(['fullName', 'phone'])",
+        "fullName": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 100"
+        },
+        "phone": {
+          ".validate": "newData.isString() && newData.val().matches(/^\\+?[0-9]{9,15}$/)"
+        },
+        "email": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 254"
+        },
+        "address": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 300"
+        },
+        "district": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 60"
+        },
+        "photoPath": {
+          ".validate": "newData.isString() && newData.val().beginsWith('profile_photos/' + $uid + '/')"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber() && (data.exists() ? newData.val() === data.val() : newData.val() === now)"
+        },
+        "updatedAt": {
+          ".validate": "newData.isNumber() && newData.val() === now"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "cleaners": {
+      ".read": "auth.token.admin === true",
+      ".write": "auth.token.admin === true",
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || auth.token.admin === true)",
+        ".write": "auth != null && (auth.uid === $uid || auth.token.admin === true)",
+        ".validate": "newData.hasChildren(['fullName', 'phone', 'nidaNumber', 'residentialAddress'])",
+        "fullName": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 100"
+        },
+        "phone": {
+          ".validate": "newData.isString() && newData.val().matches(/^\\+?[0-9]{9,15}$/)"
+        },
+        "email": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 254"
+        },
+        "nidaNumber": {
+          ".validate": "newData.isString() && newData.val().length >= 8 && newData.val().length <= 30 && (auth.token.admin === true || data.val() === newData.val() || root.child('provider_verification/' + $uid + '/status').val() !== 'approved')"
+        },
+        "residentialAddress": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 300"
+        },
+        "serviceAreas": {
+          "$i": {
+            ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 60"
+          }
+        },
+        "experienceYears": {
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 60"
+        },
+        "experienceNotes": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 1000"
+        },
+        "photoPath": {
+          ".validate": "newData.isString() && newData.val().beginsWith('profile_photos/' + $uid + '/')"
+        },
+        "available": {
+          ".validate": "newData.isBoolean()"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber() && (data.exists() ? newData.val() === data.val() : newData.val() === now)"
+        },
+        "updatedAt": {
+          ".validate": "newData.isNumber() && newData.val() === now"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "companies": {
+      ".read": "auth.token.admin === true",
+      ".write": "auth.token.admin === true",
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || auth.token.admin === true)",
+        ".write": "auth != null && (auth.uid === $uid || auth.token.admin === true)",
+        ".validate": "newData.hasChildren(['companyName', 'brelaNumber', 'businessLicenseNumber', 'phone'])",
+        "companyName": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 150"
+        },
+        "brelaNumber": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 50 && (auth.token.admin === true || data.val() === newData.val() || root.child('provider_verification/' + $uid + '/status').val() !== 'approved')"
+        },
+        "businessLicenseNumber": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 50 && (auth.token.admin === true || data.val() === newData.val() || root.child('provider_verification/' + $uid + '/status').val() !== 'approved')"
+        },
+        "address": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 300"
+        },
+        "region": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 60"
+        },
+        "district": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 60"
+        },
+        "phone": {
+          ".validate": "newData.isString() && newData.val().matches(/^\\+?[0-9]{9,15}$/)"
+        },
+        "email": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 254"
+        },
+        "director": {
+          ".validate": "newData.hasChildren(['fullName', 'phone'])",
+          "fullName": {
+            ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 100"
+          },
+          "phone": {
+            ".validate": "newData.isString() && newData.val().matches(/^\\+?[0-9]{9,15}$/)"
+          },
+          "nidaNumber": {
+            ".validate": "newData.isString() && newData.val().length >= 8 && newData.val().length <= 30 && (auth.token.admin === true || data.val() === newData.val() || root.child('provider_verification/' + $uid + '/status').val() !== 'approved')"
+          },
+          "$other": {
+            ".validate": false
+          }
+        },
+        "employees": {
+          "$eid": {
+            ".validate": "newData.hasChildren(['fullName', 'phone'])",
+            "fullName": {
+              ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 100"
+            },
+            "phone": {
+              ".validate": "newData.isString() && newData.val().matches(/^\\+?[0-9]{9,15}$/)"
+            },
+            "role": {
+              ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 60"
+            },
+            "active": {
+              ".validate": "newData.isBoolean()"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber() && (data.exists() ? newData.val() === data.val() : newData.val() === now)"
+        },
+        "updatedAt": {
+          ".validate": "newData.isNumber() && newData.val() === now"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "services": {
+      ".read": "auth != null",
+      ".write": "auth.token.admin === true",
+      "$serviceId": {
+        ".validate": "newData.hasChildren(['name', 'active'])",
+        "name": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 100"
+        },
+        "active": {
+          ".validate": "newData.isBoolean()"
+        }
+      }
+    },
+    "pricing": {
+      ".read": "auth != null",
+      ".write": "auth.token.admin === true",
+      "$serviceId": {
+        "basePrice": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        }
+      }
+    },
+    "bookings": {
+      ".read": "auth.token.admin === true",
+      ".indexOn": [
+        "status",
+        "customerId",
+        "cleanerId",
+        "companyId",
+        "createdAt"
+      ],
+      "$bid": {
+        ".read": "auth != null && (data.child('customerId').val() === auth.uid || data.child('cleanerId').val() === auth.uid || data.child('companyId').val() === auth.uid || auth.token.admin === true)",
+        ".write": "auth != null && (auth.token.admin === true || (!data.exists() && newData.child('customerId').val() === auth.uid))",
+        ".validate": "newData.hasChildren(['customerId', 'serviceId', 'status', 'createdAt'])",
+        "customerId": {
+          ".validate": "newData.isString() && (auth.token.admin === true || data.val() === newData.val() || (!data.exists() && newData.val() === auth.uid))"
+        },
+        "serviceId": {
+          ".validate": "newData.isString() && (data.exists() ? data.val() === newData.val() : root.child('services/' + newData.val() + '/active').val() === true)"
+        },
+        "location": {
+          ".validate": "newData.hasChildren(['address'])",
+          "address": {
+            ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 300"
+          },
+          "district": {
+            ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 60"
+          },
+          "lat": {
+            ".validate": "newData.isNumber() && newData.val() >= -90 && newData.val() <= 90"
+          },
+          "lng": {
+            ".validate": "newData.isNumber() && newData.val() >= -180 && newData.val() <= 180"
+          },
+          "$other": {
+            ".validate": false
+          }
+        },
+        "scheduledDate": {
+          ".validate": "newData.isString() && newData.val().matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)"
+        },
+        "scheduledTime": {
+          ".validate": "newData.isString() && newData.val().matches(/^[0-9]{2}:[0-9]{2}$/)"
+        },
+        "notes": {
+          ".validate": "newData.isString() && newData.val().length >= 0 && newData.val().length <= 500"
+        },
+        "status": {
+          ".write": "auth != null && (auth.token.admin === true || root.child('bookings/' + $bid + '/customerId').val() === auth.uid || (root.child('bookings/' + $bid + '/cleanerId').val() === auth.uid || root.child('bookings/' + $bid + '/companyId').val() === auth.uid))",
+          ".validate": "newData.isString() && newData.val().matches(/^(created|searching|assigned|accepted|on_the_way|started|completed|payment_confirmed|cancelled)$/) && (auth.token.admin === true || (!data.exists() && newData.val() === 'created') || ((root.child('bookings/' + $bid + '/cleanerId').val() === auth.uid || root.child('bookings/' + $bid + '/companyId').val() === auth.uid) && ((data.val() === 'assigned' && newData.val() === 'accepted') || (data.val() === 'accepted' && newData.val() === 'on_the_way') || (data.val() === 'on_the_way' && newData.val() === 'started') || (data.val() === 'started' && newData.val() === 'completed'))) || (root.child('bookings/' + $bid + '/customerId').val() === auth.uid && newData.val() === 'cancelled' && (data.val() === 'created' || data.val() === 'searching' || data.val() === 'assigned')))"
+        },
+        "cancelReason": {
+          ".write": "auth != null && (auth.token.admin === true || (root.child('bookings/' + $bid + '/customerId').val() === auth.uid && (root.child('bookings/' + $bid + '/status').val() === 'created' || root.child('bookings/' + $bid + '/status').val() === 'searching' || root.child('bookings/' + $bid + '/status').val() === 'assigned')))",
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 300"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber() && (data.exists() ? newData.val() === data.val() : newData.val() === now)"
+        },
+        "updatedAt": {
+          ".validate": "newData.isNumber() && newData.val() === now"
+        },
+        "cleanerId": {
+          ".validate": "newData.isString() && (auth.token.admin === true) && (data.val() === newData.val() || (root.child('provider_verification/' + newData.val() + '/status').val() === 'approved' && root.child('cleaners/' + newData.val() + '/available').val() === true))"
+        },
+        "companyId": {
+          ".validate": "newData.isString() && (auth.token.admin === true) && (data.val() === newData.val() || root.child('provider_verification/' + newData.val() + '/status').val() === 'approved')"
+        },
+        "cleanerSummary": {
+          ".validate": "auth.token.admin === true"
+        },
+        "quote": {
+          ".validate": "auth.token.admin === true"
+        },
+        "paymentStatus": {
+          ".validate": "newData.isString() && newData.val().matches(/^(unpaid|pending|paid|failed|refunded)$/) && auth.token.admin === true"
+        },
+        "trackingEnabled": {
+          ".validate": "newData.isBoolean() && auth.token.admin === true"
+        },
+        "tracking": {
+          ".write": "auth != null && (root.child('bookings/' + $bid + '/cleanerId').val() === auth.uid || root.child('bookings/' + $bid + '/companyId').val() === auth.uid) && (root.child('bookings/' + $bid + '/status').val() === 'on_the_way' || root.child('bookings/' + $bid + '/status').val() === 'started')",
+          ".validate": "newData.hasChildren(['lat', 'lng', 'updatedAt'])",
+          "lat": {
+            ".validate": "newData.isNumber() && newData.val() >= -90 && newData.val() <= 90"
+          },
+          "lng": {
+            ".validate": "newData.isNumber() && newData.val() >= -180 && newData.val() <= 180"
+          },
+          "updatedAt": {
+            ".validate": "newData.isNumber() && newData.val() === now"
+          },
+          "$other": {
+            ".validate": false
+          }
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "user_bookings": {
+      ".read": "auth.token.admin === true",
+      ".write": "auth.token.admin === true",
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || auth.token.admin === true)",
+        "$bid": {
+          ".write": "auth != null && (auth.token.admin === true || (auth.uid === $uid && !data.exists() && newData.val() === true && root.child('bookings/' + $bid + '/customerId').val() === auth.uid))",
+          ".validate": "newData.isBoolean()"
+        }
+      }
+    },
+    "provider_documents": {
+      ".read": "auth.token.admin === true",
+      ".write": "auth.token.admin === true",
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || auth.token.admin === true)",
+        "$docType": {
+          ".validate": "$docType.matches(/^(brela|business_licence|nida|integrity_declaration|application_letter|identification)$/)",
+          "$docId": {
+            ".write": "auth != null && (auth.token.admin === true || (auth.uid === $uid && !data.exists()))",
+            ".validate": "newData.hasChildren(['storagePath', 'fileName', 'contentType', 'size', 'uploadedAt'])",
+            "storagePath": {
+              ".validate": "newData.isString() && newData.val().beginsWith('provider_documents/' + $uid + '/' + $docType + '/')"
+            },
+            "fileName": {
+              ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 120"
+            },
+            "contentType": {
+              ".validate": "newData.isString() && newData.val().matches(/^(application\\/pdf|image\\/jpeg|image\\/png)$/)"
+            },
+            "size": {
+              ".validate": "newData.isNumber() && newData.val() > 0 && newData.val() <= 5242880"
+            },
+            "uploadedAt": {
+              ".validate": "newData.isNumber() && newData.val() === now"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        }
+      }
+    },
+    "provider_verification": {
+      ".read": "auth.token.admin === true",
+      ".write": "auth.token.admin === true",
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || auth.token.admin === true)",
+        ".write": "auth != null && (auth.token.admin === true || (auth.uid === $uid && !data.exists()))",
+        ".validate": "newData.hasChildren(['status', 'providerType'])",
+        "providerType": {
+          ".validate": "newData.isString() && newData.val().matches(/^(cleaner|company)$/)"
+        },
+        "status": {
+          ".validate": "newData.isString() && newData.val().matches(/^(pending|approved|rejected|resubmit)$/) && (auth.token.admin === true || newData.val() === 'pending')"
+        },
+        "reason": {
+          ".validate": "newData.isString() && newData.val().length <= 500 && auth.token.admin === true"
+        },
+        "reviewedBy": {
+          ".validate": "newData.isString() && auth.token.admin === true"
+        },
+        "reviewedAt": {
+          ".validate": "newData.isNumber() && auth.token.admin === true"
+        },
+        "documents": {
+          ".validate": "auth.token.admin === true"
+        },
+        "submittedAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "payments": {
+      ".read": "auth.token.admin === true",
+      ".write": "auth.token.admin === true",
+      "$paymentId": {
+        ".read": "auth != null && data.child('customerId').val() === auth.uid"
+      }
+    },
+    "reviews": {
+      ".read": "auth != null",
+      ".write": "auth.token.admin === true",
+      "$bookingId": {
+        ".write": "auth != null && !data.exists() && newData.child('customerId').val() === auth.uid && root.child('bookings/' + $bookingId + '/customerId').val() === auth.uid && (root.child('bookings/' + $bookingId + '/status').val() === 'completed' || root.child('bookings/' + $bookingId + '/status').val() === 'payment_confirmed')",
+        ".validate": "newData.hasChildren(['rating', 'customerId', 'providerId', 'createdAt'])",
+        "rating": {
+          ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 5 && newData.val() % 1 === 0"
+        },
+        "comment": {
+          ".validate": "newData.isString() && newData.val().length >= 0 && newData.val().length <= 1000"
+        },
+        "customerId": {
+          ".validate": "newData.isString()"
+        },
+        "providerId": {
+          ".validate": "newData.isString() && (newData.val() === root.child('bookings/' + $bookingId + '/cleanerId').val() || newData.val() === root.child('bookings/' + $bookingId + '/companyId').val())"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber() && newData.val() === now"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "notifications": {
+      ".read": "auth.token.admin === true",
+      ".write": "auth.token.admin === true",
+      "$uid": {
+        ".read": "auth.uid === $uid",
+        "$nid": {
+          "read": {
+            ".write": "auth != null && auth.uid === $uid",
+            ".validate": "newData.isBoolean()"
+          }
+        }
+      }
+    },
+    "settings": {
+      ".read": "auth.token.admin === true",
+      ".write": "auth.token.admin === true"
+    }
+  }
+}
