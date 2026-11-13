@@ -420,7 +420,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .form { display: grid; gap: 16px; }
 .form__row { display: grid; gap: 16px; }
 @media (min-width: 600px) { .form__row { grid-template-columns: 1fr 1fr; } }
-.field { display: grid; gap: 6px; }
+.field { display: grid; gap: 6px; align-content: start; }
 .field label { font-weight: 600; color: var(--navy); font-size: 0.95rem; }
 .field input,
 .field select,
@@ -497,3 +497,10 @@ ul { margin: 0; padding: 0; list-style: none; }
 .booking__head h3 { margin: 0; }
 .booking p { margin: 6px 0 0; color: var(--text-muted); }
 .booking .btn { margin-top: 12px; }
+
+/* Header with two buttons (booking pages): keep them side by side on phones */
+.nav > span { display: inline-flex; gap: 8px; flex-shrink: 0; }
+.nav .brand__name { white-space: nowrap; }
+@media (max-width: 480px) {
+  .nav:has(> span) .brand__name { display: none; }
+}
