@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Jisajili kama Mteja | USAFI SMART</title>
+  <title>Jisajili | USAFI SMART</title>
   <meta name="robots" content="noindex">
   <meta name="theme-color" content="#022B5B">
   <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
@@ -20,13 +20,51 @@
     </div>
   </header>
 
-  <main class="placeholder">
-    <div class="placeholder__box">
-      <span class="placeholder__badge">Inakuja - Phase 3</span>
-      <h1>Jisajili kama Mteja</h1>
-      <p>Ukurasa huu bado haujajengwa. Utakamilishwa katika Phase 3 ya mradi.</p>
-      <a class="btn btn--primary" href="../index.html">Rudi Nyumbani</a>
+  <main class="auth">
+    <div class="auth__box">
+      <h1>Jisajili</h1>
+      <p class="auth__sub">Fungua akaunti ya mteja kuagiza huduma za usafi.</p>
+      <form id="form" class="form">
+        <div class="field">
+          <label for="fullName">Jina kamili</label>
+          <input id="fullName" name="fullName" type="text" autocomplete="name" maxlength="100" required>
+        </div>
+        <div class="form__row">
+        <div class="field">
+          <label for="phone">Namba ya simu</label>
+          <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="0712 345 678" inputmode="tel" required>
+        </div>
+        <div class="field">
+          <label for="district">Wilaya</label>
+          <input id="district" name="district" type="text" maxlength="60" placeholder="Mfano: Kinondoni">
+        </div>
+        </div>
+        <div class="field">
+          <label for="email">Barua pepe</label>
+          <input id="email" name="email" type="email" autocomplete="email" maxlength="254" required>
+        </div>
+        <div class="form__row">
+        <div class="field">
+          <label for="password">Nenosiri</label>
+          <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" required>
+          <span class="field__hint">Herufi 8 au zaidi.</span>
+        </div>
+        <div class="field">
+          <label for="confirm">Thibitisha nenosiri</label>
+          <input id="confirm" name="confirm" type="password" autocomplete="new-password" minlength="8" required>
+        </div>
+        </div>
+        <p class="form__msg" id="msg" role="alert" aria-live="polite"></p>
+        <button class="btn btn--primary btn--block" type="submit">Jisajili</button>
+        <p class="form__links"><a href="login.html">Tayari una akaunti? Ingia</a></p>
+      </form>
     </div>
   </main>
+
+  <script type="module">
+    import { bindForm, registerCustomer } from "../shared/account.js";
+
+    bindForm(document.getElementById("form"), registerCustomer, { redirect: "../customer/index.html", success: "Akaunti imeundwa. Inakupeleka..." });
+  </script>
 </body>
 </html>

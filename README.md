@@ -7,8 +7,8 @@ Cleaning services marketplace (Book • Clean • Relax) — Dar es Salaam, Tanz
 | Phase | Scope | Status |
 |-------|-------|--------|
 | 1 | Project setup, folder structure, brand design, homepage, responsive navigation | Built — awaiting your testing |
-| 2 | Firebase config, authentication, role-based login | Firebase SDK wired (config, Auth, Database, Storage, Analytics); security rules drafted (not deployed) — **live connection not yet confirmed**; role-based login not started |
-| 3–10 | See master prompt | Not started |
+| 2 | Firebase config, authentication, role-based login | Customer, cleaner and company registration + login + role redirect written (`shared/session.js`, `shared/account.js`); admin claim script written. **Not yet tested against Firebase or the emulator.** Admin login page not built. |
+| 3–10 | See master prompt | Customer booking (`customer/booking.html`, `bookings.html`) written, untested. Everything else not started |
 
 **Not confirmed / not connected yet:** the Firebase connection (verify with `firebase-check.html`, see below), payments, Google Maps, notifications. Security rules are drafts in this repository and have **not** been deployed to the Firebase project.
 
@@ -116,3 +116,16 @@ Green `#16A34A` · Dark green `#14532D` · Navy `#022B5B` · White `#FFFFFF` · 
 - No Firebase Admin SDK keys, service-account files or payment secrets in frontend code.
 - No hardcoded admin password; admin role via Firebase custom claims, assigned server-side.
 - Prices, commission and payment status are validated server-side (Cloud Functions).
+
+## Accounts, bookings and local tools (added)
+
+| File | Purpose |
+|------|---------|
+| `shared/session.js` | Reads the role (admin claim, else `users/<uid>/accountType`), guards pages, redirects, logout |
+| `shared/account.js` | Registration for customer / cleaner / company (one multi-path write, Auth user removed if the write fails), login, password reset, Swahili error messages |
+| `customer/booking.html`, `bookings.html` | Create a booking (status `created`, no price) and list / cancel own bookings |
+| `tools/set-admin.js` | Run locally with a service account **kept outside the repo**: gives the first admin the `admin` claim |
+| `tools/seed-services.js` | Loads **sample** services and TZS prices (placeholders; replace with real ones) |
+| `tests/rules.test.js` | Rules tests for the emulator (`firebase emulators:start --only database`, then `cd tools && npm install && npm run test:rules`). **Not run yet.** |
+
+Notes: companies are one account each; employees are records under `companies/<uid>/employees` (page not built yet). Known rules gap found while writing the app: a non-admin cannot write `bookings/<id>/updatedAt`, so the app writes only `status` and `cancelReason` when cancelling.

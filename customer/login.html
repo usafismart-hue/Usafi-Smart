@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Ingia - Mteja | USAFI SMART</title>
+  <title>Ingia | USAFI SMART</title>
   <meta name="robots" content="noindex">
   <meta name="theme-color" content="#022B5B">
   <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
@@ -20,13 +20,42 @@
     </div>
   </header>
 
-  <main class="placeholder">
-    <div class="placeholder__box">
-      <span class="placeholder__badge">Inakuja - Phase 3</span>
-      <h1>Ingia - Mteja</h1>
-      <p>Ukurasa huu bado haujajengwa. Utakamilishwa katika Phase 3 ya mradi.</p>
-      <a class="btn btn--primary" href="../index.html">Rudi Nyumbani</a>
+  <main class="auth">
+    <div class="auth__box">
+      <h1>Ingia</h1>
+      <p class="auth__sub">Akaunti ya mteja.</p>
+      <form id="form" class="form">
+        <div class="field">
+          <label for="email">Barua pepe</label>
+          <input id="email" name="email" type="email" autocomplete="email" maxlength="254" required>
+        </div>
+        <div class="field">
+          <label for="password">Nenosiri</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" required>
+        </div>
+        <p class="form__msg" id="msg" role="alert" aria-live="polite"></p>
+        <button class="btn btn--primary btn--block" type="submit">Ingia</button>
+        <p class="form__links"><button type="button" class="linklike" id="forgot">Umesahau nenosiri?</button> <a href="register.html">Huna akaunti? Jisajili</a></p>
+      </form>
     </div>
   </main>
+
+  <script type="module">
+    import { bindForm, login, resetPassword, authMessage, showLoginNotice } from "../shared/account.js";
+    import { redirectIfSignedIn } from "../shared/session.js";
+
+    redirectIfSignedIn();
+    showLoginNotice();
+    const form = document.getElementById("form");
+    const ui = bindForm(form, function (d) { return login(d.email, d.password); }, { success: "Karibu. Inakupeleka..." });
+    document.getElementById("forgot").addEventListener("click", async function () {
+      try {
+        await resetPassword(form.elements.email.value);
+        ui.setMsg("Tumekutumia barua pepe ya kubadilisha nenosiri.", "ok");
+      } catch (err) {
+        ui.setMsg(authMessage(err), "error");
+      }
+    });
+  </script>
 </body>
 </html>

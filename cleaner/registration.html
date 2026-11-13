@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Usajili wa Msafishaji | USAFI SMART</title>
+  <title>Jisajili kama Msafishaji | USAFI SMART</title>
   <meta name="robots" content="noindex">
   <meta name="theme-color" content="#022B5B">
   <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
@@ -20,13 +20,72 @@
     </div>
   </header>
 
-  <main class="placeholder">
-    <div class="placeholder__box">
-      <span class="placeholder__badge">Inakuja - Phase 4</span>
-      <h1>Usajili wa Msafishaji</h1>
-      <p>Ukurasa huu bado haujajengwa. Utakamilishwa katika Phase 4 ya mradi.</p>
-      <a class="btn btn--primary" href="../index.html">Rudi Nyumbani</a>
+  <main class="auth">
+    <div class="auth__box">
+      <h1>Jisajili kama Msafishaji</h1>
+      <p class="auth__sub">Akaunti itakaguliwa kabla ya kupokea kazi.</p>
+      <form id="form" class="form">
+        <div class="field">
+          <label for="fullName">Jina kamili</label>
+          <input id="fullName" name="fullName" type="text" autocomplete="name" maxlength="100" required>
+        </div>
+        <div class="form__row">
+        <div class="field">
+          <label for="phone">Namba ya simu</label>
+          <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="0712 345 678" inputmode="tel" required>
+        </div>
+        <div class="field">
+          <label for="nidaNumber">Namba ya NIDA</label>
+          <input id="nidaNumber" name="nidaNumber" type="text" maxlength="30" required>
+          <span class="field__hint">Inaonekana na wewe na usimamizi tu.</span>
+        </div>
+        </div>
+        <div class="field">
+          <label for="residentialAddress">Anwani ya makazi</label>
+          <input id="residentialAddress" name="residentialAddress" type="text" maxlength="300" required>
+        </div>
+        <div class="field">
+          <label for="serviceAreas">Maeneo ya kazi</label>
+          <input id="serviceAreas" name="serviceAreas" type="text">
+          <span class="field__hint">Tenganisha kwa koma. Mfano: Kinondoni, Ilala</span>
+        </div>
+        <div class="form__row">
+        <div class="field">
+          <label for="experienceYears">Miaka ya uzoefu</label>
+          <input id="experienceYears" name="experienceYears" type="number" min="0" max="60">
+        </div>
+
+        </div>
+        <div class="field">
+          <label for="experienceNotes">Maelezo ya uzoefu</label>
+          <textarea id="experienceNotes" name="experienceNotes" rows="3" maxlength="1000"></textarea>
+        </div>
+        <div class="field">
+          <label for="email">Barua pepe</label>
+          <input id="email" name="email" type="email" autocomplete="email" maxlength="254" required>
+        </div>
+        <div class="form__row">
+        <div class="field">
+          <label for="password">Nenosiri</label>
+          <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" required>
+          <span class="field__hint">Herufi 8 au zaidi.</span>
+        </div>
+        <div class="field">
+          <label for="confirm">Thibitisha nenosiri</label>
+          <input id="confirm" name="confirm" type="password" autocomplete="new-password" minlength="8" required>
+        </div>
+        </div>
+        <p class="form__msg" id="msg" role="alert" aria-live="polite"></p>
+        <button class="btn btn--primary btn--block" type="submit">Jisajili kama Msafishaji</button>
+        <p class="form__links"><a href="login.html">Tayari una akaunti? Ingia</a></p>
+      </form>
     </div>
   </main>
+
+  <script type="module">
+    import { bindForm, registerCleaner } from "../shared/account.js";
+
+    bindForm(document.getElementById("form"), registerCleaner, { redirect: "../cleaner/index.html", success: "Akaunti imeundwa. Inakupeleka..." });
+  </script>
 </body>
 </html>

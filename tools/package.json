@@ -1,0 +1,16 @@
+{
+  "name": "usafi-smart-tools",
+  "private": true,
+  "description": "Local admin scripts and rules tests. Never deployed; never contains secrets.",
+  "type": "commonjs",
+  "scripts": {
+    "test:rules": "node --test ../tests/rules.test.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.0.0"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^4.0.0",
+    "firebase": "^11.0.0"
+  }
+}

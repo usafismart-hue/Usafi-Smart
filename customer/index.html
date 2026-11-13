@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Dashibodi ya Mteja | USAFI SMART</title>
+  <title>Akaunti yangu | USAFI SMART</title>
   <meta name="robots" content="noindex">
   <meta name="theme-color" content="#022B5B">
   <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
@@ -16,17 +16,40 @@
         <img src="../assets/images/logo.svg" alt="" width="36" height="36">
         <span class="brand__name">USAFI <span>SMART</span></span>
       </a>
-      <a class="btn btn--outline btn--sm" href="../index.html">Rudi Nyumbani</a>
+      <button class="btn btn--outline btn--sm" type="button" data-logout>Toka</button>
     </div>
   </header>
 
-  <main class="placeholder">
-    <div class="placeholder__box">
-      <span class="placeholder__badge">Inakuja - Phase 3</span>
-      <h1>Dashibodi ya Mteja</h1>
-      <p>Ukurasa huu bado haujajengwa. Utakamilishwa katika Phase 3 ya mradi.</p>
-      <a class="btn btn--primary" href="../index.html">Rudi Nyumbani</a>
+  <main class="dash">
+    <div class="container">
+      <h1 id="hello">Akaunti yangu</h1>
+      <p id="sub">Agiza huduma ya usafi na ufuatilie maagizo yako.</p>
+      <div class="dash__grid">
+        <div class="dash__card">
+          <h3>Agiza Huduma</h3>
+          <p>Chagua huduma, tarehe na mahali.</p>
+          <a class="btn btn--primary" href="booking.html">Agiza Sasa</a>
+        </div>
+        <div class="dash__card">
+          <h3>Maagizo Yangu</h3>
+          <p>Angalia hali ya maagizo yako.</p>
+          <a class="btn btn--outline" href="bookings.html">Tazama Maagizo</a>
+        </div>
+      </div>
     </div>
   </main>
+
+  <script type="module">
+    import { requireRole, wireLogout } from "../shared/session.js";
+    import { db, ref, get } from "../shared/database.js";
+
+    wireLogout();
+    const { user } = await requireRole("customer");
+    try {
+      const snap = await get(ref(db, "users/" + user.uid + "/fullName"));
+      if (snap.exists()) document.getElementById("hello").textContent = "Karibu, " + snap.val();
+    } catch (e) { console.error(e); }
+
+  </script>
 </body>
 </html>

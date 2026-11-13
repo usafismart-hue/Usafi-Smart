@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Dashibodi ya Kampuni | USAFI SMART</title>
+  <title>Akaunti ya Kampuni | USAFI SMART</title>
   <meta name="robots" content="noindex">
   <meta name="theme-color" content="#022B5B">
   <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
@@ -16,17 +16,54 @@
         <img src="../assets/images/logo.svg" alt="" width="36" height="36">
         <span class="brand__name">USAFI <span>SMART</span></span>
       </a>
-      <a class="btn btn--outline btn--sm" href="../index.html">Rudi Nyumbani</a>
+      <button class="btn btn--outline btn--sm" type="button" data-logout>Toka</button>
     </div>
   </header>
 
-  <main class="placeholder">
-    <div class="placeholder__box">
-      <span class="placeholder__badge">Inakuja - Phase 5</span>
-      <h1>Dashibodi ya Kampuni</h1>
-      <p>Ukurasa huu bado haujajengwa. Utakamilishwa katika Phase 5 ya mradi.</p>
-      <a class="btn btn--primary" href="../index.html">Rudi Nyumbani</a>
+  <main class="dash">
+    <div class="container">
+      <h1 id="hello">Akaunti ya Kampuni</h1>
+      <p id="sub">Akaunti moja kwa kampuni; wafanyakazi ni rekodi tu.</p>
+      <div class="dash__grid">
+        <div class="dash__card">
+          <h3>Hali ya uthibitisho</h3>
+          <p>Utaweza kupokea kazi baada ya kuidhinishwa na usimamizi.</p>
+          <span id="status" class="badge">Inapakia...</span>
+          <p id="reason"></p>
+        </div>
+      </div>
     </div>
   </main>
+
+  <script type="module">
+    import { requireRole, wireLogout } from "../shared/session.js";
+    import { db, ref, get } from "../shared/database.js";
+
+    wireLogout();
+    const { user } = await requireRole("company");
+    try {
+      const snap = await get(ref(db, "users/" + user.uid + "/fullName"));
+      if (snap.exists()) document.getElementById("hello").textContent = "Karibu, " + snap.val();
+    } catch (e) { console.error(e); }
+
+    const labels = {
+      pending: ["Inasubiri ukaguzi", "warn"],
+      approved: ["Imeidhinishwa", "ok"],
+      rejected: ["Imekataliwa", "bad"],
+      resubmit: ["Tuma tena hati", "warn"]
+    };
+    const box = document.getElementById("status");
+    try {
+      const v = await get(ref(db, "provider_verification/" + user.uid));
+      const data = v.exists() ? v.val() : { status: "pending" };
+      const l = labels[data.status] || labels.pending;
+      box.textContent = l[0];
+      box.className = "badge badge--" + l[1];
+      if (data.reason) document.getElementById("reason").textContent = data.reason;
+    } catch (e) {
+      console.error(e);
+      box.textContent = "Imeshindwa kusoma hali";
+    }
+  </script>
 </body>
 </html>

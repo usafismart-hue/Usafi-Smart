@@ -16,17 +16,138 @@
         <img src="../assets/images/logo.svg" alt="" width="36" height="36">
         <span class="brand__name">USAFI <span>SMART</span></span>
       </a>
-      <a class="btn btn--outline btn--sm" href="../index.html">Rudi Nyumbani</a>
+      <span>
+        <a class="btn btn--outline btn--sm" href="bookings.html">Maagizo Yangu</a>
+        <button class="btn btn--outline btn--sm" type="button" data-logout>Toka</button>
+      </span>
     </div>
   </header>
 
-  <main class="placeholder">
-    <div class="placeholder__box">
-      <span class="placeholder__badge">Inakuja - Phase 7</span>
+  <main class="auth">
+    <div class="auth__box">
       <h1>Agiza Huduma</h1>
-      <p>Ukurasa huu bado haujajengwa. Utakamilishwa katika Phase 7 ya mradi.</p>
-      <a class="btn btn--primary" href="../index.html">Rudi Nyumbani</a>
+      <p class="auth__sub">Bei itathibitishwa baada ya agizo kupokelewa.</p>
+      <form id="form" class="form">
+        <div class="field">
+          <label for="serviceId">Huduma</label>
+          <select id="serviceId" name="serviceId" required>
+            <option value="">Inapakia huduma...</option>
+          </select>
+          <span class="field__hint" id="priceHint"></span>
+        </div>
+        <div class="form__row">
+          <div class="field">
+            <label for="scheduledDate">Tarehe</label>
+            <input id="scheduledDate" name="scheduledDate" type="date" required>
+          </div>
+          <div class="field">
+            <label for="scheduledTime">Saa</label>
+            <input id="scheduledTime" name="scheduledTime" type="time" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="address">Anwani ya mahali pa kazi</label>
+          <input id="address" name="address" type="text" maxlength="300" autocomplete="street-address" required>
+        </div>
+        <div class="field">
+          <label for="district">Wilaya</label>
+          <input id="district" name="district" type="text" maxlength="60" placeholder="Mfano: Kinondoni" required>
+        </div>
+        <div class="field">
+          <label for="notes">Maelezo ya ziada (si lazima)</label>
+          <textarea id="notes" name="notes" rows="3" maxlength="500"></textarea>
+        </div>
+        <p class="form__msg" id="msg" role="alert" aria-live="polite"></p>
+        <button class="btn btn--primary btn--block" type="submit" disabled>Tuma Agizo</button>
+      </form>
     </div>
   </main>
+
+  <script type="module">
+    import { requireRole, wireLogout } from "../shared/session.js";
+    import { bindForm } from "../shared/account.js";
+    import { db, ref, get, push, update, serverTimestamp } from "../shared/database.js";
+
+    wireLogout();
+    const { user } = await requireRole("customer");
+
+    const form = document.getElementById("form");
+    const select = document.getElementById("serviceId");
+    const hint = document.getElementById("priceHint");
+    const submit = form.querySelector('button[type="submit"]');
+    const msg = document.getElementById("msg");
+
+    // Earliest date = today (local time), formatted YYYY-MM-DD.
+    const now = new Date();
+    const today = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0");
+    form.elements.scheduledDate.min = today;
+
+    // Load active services and any base price (price is only a guide).
+    const prices = {};
+    try {
+      const [sSnap, pSnap] = await Promise.all([get(ref(db, "services")), get(ref(db, "pricing"))]);
+      pSnap.forEach(function (c) { if (typeof c.val().basePrice === "number") prices[c.key] = c.val().basePrice; });
+      select.textContent = "";
+      const first = document.createElement("option");
+      first.value = "";
+      first.textContent = "Chagua huduma";
+      select.appendChild(first);
+      let count = 0;
+      sSnap.forEach(function (c) {
+        const s = c.val();
+        if (s.active !== true) return;
+        const o = document.createElement("option");
+        o.value = c.key;
+        o.textContent = s.name;
+        select.appendChild(o);
+        count++;
+      });
+      if (count === 0) {
+        first.textContent = "Hakuna huduma kwa sasa";
+        msg.textContent = "Huduma bado hazijawekwa. Jaribu tena baadaye.";
+        msg.className = "form__msg form__msg--error";
+      } else {
+        submit.disabled = false;
+      }
+    } catch (e) {
+      console.error(e);
+      select.options[0].textContent = "Imeshindwa kupakia huduma";
+      msg.textContent = "Imeshindwa kupakia huduma. Angalia mtandao kisha pakia ukurasa upya.";
+      msg.className = "form__msg form__msg--error";
+    }
+
+    select.addEventListener("change", function () {
+      const p = prices[select.value];
+      hint.textContent = typeof p === "number" ? "Kuanzia TZS " + p.toLocaleString("en-US") : "";
+    });
+
+    bindForm(form, async function (d) {
+      const address = d.address.trim();
+      const district = d.district.trim();
+      if (!d.serviceId) throw Object.assign(new Error("x"), { userMessage: "Chagua huduma." });
+      if (!address || !district) throw Object.assign(new Error("x"), { userMessage: "Weka anwani na wilaya." });
+      if (d.scheduledDate < today) throw Object.assign(new Error("x"), { userMessage: "Tarehe isiwe ya zamani." });
+
+      // 1) The booking itself: status "created", no price, no provider, no payment fields.
+      const id = push(ref(db, "bookings")).key;
+      const booking = {
+        customerId: user.uid,
+        serviceId: d.serviceId,
+        status: "created",
+        location: { address: address, district: district },
+        scheduledDate: d.scheduledDate,
+        scheduledTime: d.scheduledTime,
+        createdAt: serverTimestamp()
+      };
+      const notes = d.notes.trim();
+      if (notes) booking.notes = notes;
+      await update(ref(db, "bookings/" + id), booking);
+
+      // 2) "My bookings" index. Done after step 1 because the rule checks that the
+      //    booking already exists and belongs to this customer.
+      await update(ref(db, "user_bookings/" + user.uid), { [id]: true });
+      return "bookings.html";
+    }, { success: "Agizo limetumwa. Inakupeleka..." });
+  </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Historia ya Maagizo | USAFI SMART</title>
+  <title>Maagizo Yangu | USAFI SMART</title>
   <meta name="robots" content="noindex">
   <meta name="theme-color" content="#022B5B">
   <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
@@ -16,17 +16,121 @@
         <img src="../assets/images/logo.svg" alt="" width="36" height="36">
         <span class="brand__name">USAFI <span>SMART</span></span>
       </a>
-      <a class="btn btn--outline btn--sm" href="../index.html">Rudi Nyumbani</a>
+      <span>
+        <a class="btn btn--primary btn--sm" href="booking.html">Agiza Huduma</a>
+        <button class="btn btn--outline btn--sm" type="button" data-logout>Toka</button>
+      </span>
     </div>
   </header>
 
-  <main class="placeholder">
-    <div class="placeholder__box">
-      <span class="placeholder__badge">Inakuja - Phase 7</span>
-      <h1>Historia ya Maagizo</h1>
-      <p>Ukurasa huu bado haujajengwa. Utakamilishwa katika Phase 7 ya mradi.</p>
-      <a class="btn btn--primary" href="../index.html">Rudi Nyumbani</a>
+  <main class="dash">
+    <div class="container">
+      <h1>Maagizo Yangu</h1>
+      <p id="empty">Inapakia...</p>
+      <p class="form__msg" id="msg" role="alert" aria-live="polite"></p>
+      <div class="booking-list" id="list"></div>
     </div>
   </main>
+
+  <script type="module">
+    import { requireRole, wireLogout } from "../shared/session.js";
+    import { authMessage } from "../shared/account.js";
+    import { db, ref, get, onValue, update } from "../shared/database.js";
+
+    wireLogout();
+    const { user } = await requireRole("customer");
+
+    const STATUS = {
+      created: ["Limetumwa", "warn"],
+      searching: ["Tunatafuta msafishaji", "warn"],
+      assigned: ["Msafishaji amepangiwa", "ok"],
+      accepted: ["Limekubaliwa", "ok"],
+      on_the_way: ["Msafishaji yuko njiani", "ok"],
+      started: ["Kazi inaendelea", "ok"],
+      completed: ["Kazi imekamilika", "ok"],
+      payment_confirmed: ["Malipo yamethibitishwa", "ok"],
+      cancelled: ["Limeghairiwa", "bad"]
+    };
+    const CAN_CANCEL = ["created", "searching", "assigned"];
+
+    const list = document.getElementById("list");
+    const empty = document.getElementById("empty");
+    const msg = document.getElementById("msg");
+    const bookings = {};   // id -> data
+    const watchers = {};   // id -> unsubscribe
+
+    const names = {};
+    try {
+      (await get(ref(db, "services"))).forEach(function (c) { names[c.key] = c.val().name; });
+    } catch (e) { console.error(e); }
+
+    function el(tag, cls, text) {
+      const n = document.createElement(tag);
+      if (cls) n.className = cls;
+      if (text !== undefined) n.textContent = text;
+      return n;
+    }
+
+    function render() {
+      list.textContent = "";
+      const ids = Object.keys(bookings).sort(function (a, b) {
+        return (bookings[b].createdAt || 0) - (bookings[a].createdAt || 0);
+      });
+      empty.textContent = ids.length ? "" : "Bado hujaagiza huduma yoyote.";
+      ids.forEach(function (id) {
+        const b = bookings[id];
+        const s = STATUS[b.status] || [b.status, ""];
+        const card = el("article", "booking");
+        const head = el("div", "booking__head");
+        head.appendChild(el("h3", "", names[b.serviceId] || "Huduma"));
+        head.appendChild(el("span", "badge" + (s[1] ? " badge--" + s[1] : ""), s[0]));
+        card.appendChild(head);
+        card.appendChild(el("p", "", b.scheduledDate + " saa " + b.scheduledTime));
+        if (b.location) card.appendChild(el("p", "", [b.location.address, b.location.district].filter(Boolean).join(", ")));
+        card.appendChild(el("p", "", typeof b.quote === "number" ? "Bei: TZS " + b.quote.toLocaleString("en-US") : "Bei inasubiri kuthibitishwa."));
+        if (CAN_CANCEL.indexOf(b.status) !== -1) {
+          const btn = el("button", "btn btn--outline btn--sm", "Ghairi agizo");
+          btn.type = "button";
+          btn.addEventListener("click", async function () {
+            if (!confirm("Una uhakika unataka kughairi agizo hili?")) return;
+            btn.disabled = true;
+            msg.textContent = "";
+            try {
+              // Only status and cancelReason: those are the fields the rules let a customer change.
+              await update(ref(db, "bookings/" + id), { status: "cancelled", cancelReason: "Imeghairiwa na mteja" });
+            } catch (err) {
+              msg.textContent = authMessage(err);
+              msg.className = "form__msg form__msg--error";
+              btn.disabled = false;
+            }
+          });
+          card.appendChild(btn);
+        }
+        list.appendChild(card);
+      });
+    }
+
+    // Live: the index lists my booking ids; each booking is watched individually.
+    onValue(ref(db, "user_bookings/" + user.uid), function (snap) {
+      const ids = snap.exists() ? Object.keys(snap.val()) : [];
+      ids.forEach(function (id) {
+        if (watchers[id]) return;
+        watchers[id] = onValue(ref(db, "bookings/" + id), function (b) {
+          if (b.exists()) bookings[id] = b.val(); else delete bookings[id];
+          render();
+        }, function (err) {
+          console.error(err);
+          msg.textContent = "Imeshindwa kusoma agizo moja.";
+          msg.className = "form__msg form__msg--error";
+        });
+      });
+      render();
+    }, function (err) {
+      console.error(err);
+      empty.textContent = "";
+      msg.textContent = "Imeshindwa kupakia maagizo. Jaribu tena.";
+      msg.className = "form__msg form__msg--error";
+    });
+  </script>
 </body>
 </html>

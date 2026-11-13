@@ -17,7 +17,8 @@ import {
   signInWithEmailAndPassword,
   signOut,
   sendPasswordResetEmail,
-  getIdTokenResult
+  getIdTokenResult,
+  deleteUser
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
 
 export { auth };
@@ -32,5 +33,6 @@ export {
   signInWithEmailAndPassword,
   signOut,
   sendPasswordResetEmail,
-  getIdTokenResult
+  getIdTokenResult,
+  deleteUser
 };

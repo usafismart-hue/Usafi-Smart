@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Usajili wa Kampuni | USAFI SMART</title>
+  <title>Jisajili kama Kampuni | USAFI SMART</title>
   <meta name="robots" content="noindex">
   <meta name="theme-color" content="#022B5B">
   <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
@@ -20,13 +20,88 @@
     </div>
   </header>
 
-  <main class="placeholder">
-    <div class="placeholder__box">
-      <span class="placeholder__badge">Inakuja - Phase 5</span>
-      <h1>Usajili wa Kampuni</h1>
-      <p>Ukurasa huu bado haujajengwa. Utakamilishwa katika Phase 5 ya mradi.</p>
-      <a class="btn btn--primary" href="../index.html">Rudi Nyumbani</a>
+  <main class="auth">
+    <div class="auth__box">
+      <h1>Jisajili kama Kampuni</h1>
+      <p class="auth__sub">Akaunti moja kwa kampuni. Wafanyakazi huongezwa baadaye kama rekodi.</p>
+      <form id="form" class="form">
+        <div class="field">
+          <label for="companyName">Jina la kampuni</label>
+          <input id="companyName" name="companyName" type="text" maxlength="150" required>
+        </div>
+        <div class="form__row">
+        <div class="field">
+          <label for="brelaNumber">Namba ya BRELA</label>
+          <input id="brelaNumber" name="brelaNumber" type="text" maxlength="50" required>
+        </div>
+        <div class="field">
+          <label for="businessLicenseNumber">Namba ya leseni ya biashara</label>
+          <input id="businessLicenseNumber" name="businessLicenseNumber" type="text" maxlength="50" required>
+        </div>
+        </div>
+        <div class="form__row">
+        <div class="field">
+          <label for="phone">Simu ya kampuni</label>
+          <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required>
+        </div>
+        <div class="field">
+          <label for="district">Wilaya</label>
+          <input id="district" name="district" type="text" maxlength="60">
+        </div>
+        </div>
+        <div class="form__row">
+        <div class="field">
+          <label for="region">Mkoa</label>
+          <input id="region" name="region" type="text" maxlength="60" placeholder="Dar es Salaam">
+        </div>
+        <div class="field">
+          <label for="address">Anwani</label>
+          <input id="address" name="address" type="text" maxlength="300">
+        </div>
+        </div>
+        <fieldset class="fieldset">
+          <legend>Mkurugenzi</legend>
+        <div class="field">
+          <label for="directorName">Jina kamili</label>
+          <input id="directorName" name="directorName" type="text" maxlength="100" required>
+        </div>
+        <div class="form__row">
+        <div class="field">
+          <label for="directorPhone">Namba ya simu</label>
+          <input id="directorPhone" name="directorPhone" type="tel" inputmode="tel" required>
+        </div>
+        <div class="field">
+          <label for="directorNida">Namba ya NIDA</label>
+          <input id="directorNida" name="directorNida" type="text" maxlength="30">
+        </div>
+        </div>
+        </fieldset>
+        <div class="field">
+          <label for="email">Barua pepe</label>
+          <input id="email" name="email" type="email" autocomplete="email" maxlength="254" required>
+        </div>
+        <div class="form__row">
+        <div class="field">
+          <label for="password">Nenosiri</label>
+          <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" required>
+          <span class="field__hint">Herufi 8 au zaidi.</span>
+        </div>
+        <div class="field">
+          <label for="confirm">Thibitisha nenosiri</label>
+          <input id="confirm" name="confirm" type="password" autocomplete="new-password" minlength="8" required>
+        </div>
+        </div>
+        <p class="form__msg" id="msg" role="alert" aria-live="polite"></p>
+        <button class="btn btn--primary btn--block" type="submit">Jisajili kama Kampuni</button>
+        <p class="form__links"><a href="login.html">Tayari una akaunti? Ingia</a></p>
+      </form>
     </div>
   </main>
+
+  <script type="module">
+    import { bindForm, registerCompany } from "../shared/account.js";
+
+    bindForm(document.getElementById("form"), registerCompany, { redirect: "../company/index.html", success: "Akaunti imeundwa. Inakupeleka..." });
+  </script>
 </body>
 </html>
