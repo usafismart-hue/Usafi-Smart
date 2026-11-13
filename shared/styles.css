@@ -504,3 +504,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 @media (max-width: 480px) {
   .nav:has(> span) .brand__name { display: none; }
 }
+
+/* Official logo (replaces the temporary icon + text) */
+.brand img.brand__logo { height: 48px; width: auto; display: block; }
+.site-footer .brand img.brand__logo { height: 64px; background: var(--white); padding: 6px 12px; border-radius: var(--radius); }

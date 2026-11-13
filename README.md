@@ -90,7 +90,7 @@ USAFI-SMART/
 ├── storage.rules         Draft Storage rules (not deployed)
 ├── firebase.json, .firebaserc   Firebase CLI config
 ├── assets/
-│   ├── images/logo.svg   TEMPORARY logo — replace with the approved one
+│   ├── images/logo.png, favicon.png   Official logo (trimmed) and tab icon
 │   └── templates/        Integrity Declaration + Application Letter (Phase 5)
 ├── shared/
 │   ├── styles.css        Brand design system used by every page
